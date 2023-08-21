@@ -60,15 +60,65 @@ crab_sites_size <- pie_crab %>%
 
 ##----- selecting columns -----##
 
+# unique() tells you the different values in a column, names(dataset) tells you the name of the columns
+# select individual columns by name, separate them by a comma
+crabs_subset <- pie_crab %>%
+  select(latitude, size, water_temp)
 
+# select a range of columns
+crabs_subset2 <- pie_crab %>%
+  select(site:air_temp)
 
+# select a range and an individual column
+crabs_subset3 <- pie_crab %>%
+  select(date:water_temp,
+         name)
 
+# reorder things using select by listing the columns in the order you want
+pie_crab %>% select(name, water_temp, size)
 
+##-----Mutate!!-----#
 
+# use dplyr::mutate() to add or update a column, while keeping all existing columns
+# mutate(new column name)
+# add new column of size in cm
+crabs_cm <- pie_crab %>%
+  mutate(size_cm = size / 10)
 
+# what happens if I use mutate containing the mean of the size column
+crabs_mean <- pie_crab %>%
+  mutate(size_mn = mean(size, na.rm = TRUE))
 
+# if you use an existing column name, it will completely overwrite that column
+crabs_awesome <- pie_crab %>%
+  mutate(name = "Teddy is awesome")
 
+# reminder: use group_by and summarize() in combination
+# group by site and find the mean of the crab size
+# summarize() - first element is the name of the new column created
+mean_size_by_site <- pie_crab %>%
+  group_by(site) %>%
+  summarize(mean_size = mean(size, na.rm = TRUE))
 
+# group_by then mutate
+group_mutate <- pie_crab %>%
+  group_by(site) %>%
+  mutate(mean_size_site = mean(size, na.rm = TRUE))
+
+# what if i want to create a new column that contains "giant" is size > 35 or "not giant" if the size <= 35
+# use dplyr::case_when() to write if-else statements more easily
+crabs_bin <- pie_crab %>%
+  mutate(size_bin = case_when(
+    size > 20 ~ "giant",
+    size <= 20 ~ "not giant"
+  ))
+
+sites_bin <- pie_crab %>%
+  mutate(region = case_when(
+    site %in% c("ZI", "CC", "PIE") ~ "Low",
+    site %in% c("BB", "NIB") ~ "Middle",
+    TRUE ~ "High"
+  ))
 
 
 
